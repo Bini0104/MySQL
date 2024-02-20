@@ -1,0 +1,39 @@
+/* VIEW */
+-- SELECT 쿼리문을 저장한 객체로 가상테이블이라고 불린다.
+-- 실질적인 데이터를 물리적으로 저장하고 있지 않음
+-- 테이블을 사용하는 것과 동일하게 사용할 수 있다.
+
+SELECT * FROM TBL_MENU;
+
+-- VIEW 생성
+CREATE VIEW HANSIK AS
+SELECT MENU_CODE, MENU_NAME, MENU_PRICE, CATEGORY_CODE, ORDERABLE_STATUS
+  FROM TBL_MENU
+ WHERE CATEGORY_CODE = 4;
+ 
+-- 생성된 VIEW 조회
+SELECT * FROM HANSIK;
+
+-- 베이스 테이블의 정보가 변경되면 VIEW의 결과도 같이 변경된다.
+INSERT INTO TBL_MENU VALUES (null, '식혜맛국밥', 5500, 4, 'Y');
+SELECT * FROM HANSIK;
+
+-- VIEW를 통한 DML
+-- 1) VIEW를 통한 INSERT(VIEW는 AUTO_INCREMENT가 없으므로 pk 컬럼의 값을 지정해 주어야 한다.)
+-- INSERT INTO hansik VALUES (null, '식혜맛국밥', 5500, 4, 'Y');    -- 에러 발생
+INSERT INTO HANSIK VALUES (99, '수정과맛국밥', 5500, 4, 'Y');   
+SELECT * FROM HANSIK;
+SELECT * FROM TBL_MENU;
+
+-- 2) VIEW를 통한 UPDATE
+UPDATE HANSIK SET MENU_NAME = '버터맛국밥', MENU_PRICE = 5700 WHERE MENU_CODE = 99;
+SELECT * FROM HANSIK;
+SELECT * FROM TBL_MENU;
+
+-- 3) VIEW를 통한 DELETE
+DELETE FROM HANSIK WHERE MENU_CODE = 99;
+SELECT * FROM HANSIK;
+SELECT * FROM TBL_MENU;
+
+-- VIEW 삭제
+DROP VIEW HANSIK;
