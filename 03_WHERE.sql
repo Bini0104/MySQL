@@ -1,189 +1,89 @@
-/* WHERE */
+/* JOIN */
 
--- 1) 비교연산자 예제와 함께 WHERE절 사용
-SELECT
-       MENU_NAME
-	 , MENU_PRICE
-     , ORDERABLE_STATUS
-  FROM TBL_MENU
-  WHERE ORDERABLE_STATUS = 'Y';
-  
-SELECT
-       MENU_NAME
-	 , MENU_PRICE
-     , ORDERABLE_STATUS
-   FROM TBL_MENU
-   WHERE MENU_PRICE = 13000;
-   
-   -- 같지 않음 연산자와 함께 WHERE절 사용
-SELECT
-       MENU_CODE
-	, MENU_NAME
-    , ORDERABLE_STATUS
-    FROM TBL_MENU
-    WHERE ORDERABLE_STATUS != 'Y';
-    
-    -- 대소비교 연산자와 함께 WHERE절 사용
-SELECT
-       MENU_CODE
-	 , MENU_NAME
-     , MENU_PRICE
-  FROM TBL_MENU
-WHERE MENU_PRICE > 20000;
+/* ALIAS */
+/* 컬럼 별칭*/
 
+-- 별칭에 띄어쓰기나 특수기호가 없다면 홑따옴표(')와 AS 생략이 가능하다.
 SELECT
-       MENU_CODE
-	 , MENU_NAME
-     , MENU_PRICE
+        MENU_CODE AS 'code',
+        MENU_NAME,
+        MENU_PRICE
   FROM TBL_MENU
-WHERE MENU_PRICE < 20000;
-
--- 2) AND 연산자와 함께 WHERE절 사용
-SELECT
-	  MENU_NAME,
-      MENU_PRICE,
-      CATEGORY_CODE,
-      ORDERABLE_STATUS
- FROM TBL_MENU
-WHERE ORDERABLE_STATUS = 'Y' AND
-      CATEGORY_CODE =10;
-    
-SELECT
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE,
-       ORDERABLE_STATUS
-  FROM TBL_MENU
- WHERE MENU_PRICE > 5000 AND
-       CATEGORY_CODE = 10;
-    
--- 3) OR 연산자와 함께 WHERE절 사용
-SELECT
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE,
-       ORDERABLE_STATUS
-  FROM TBL_MENU
- WHERE ORDERABLE_STATUS = 'Y' or
-       CATEGORY_CODE = 10
-ORDER BY CATEGORY_CODE;
-    
-SELECT
-	   MENU_CODE,
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE,
-       ORDERABLE_STATUS
-  FROM TBL_MENU
- WHERE MENU_PRICE > 5000 or
-       CATEGORY_CODE = 10;
-    
-SELECT
-	   MENU_CODE,
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE,
-       ORDERABLE_STATUS
-  FROM TBL_MENU
- WHERE CATEGORY_CODE = 4 OR
-       MENU_PRICE = 9000 AND
-       MENU_CODE > 10;
-    
--- 4) BETWEEN 연산사 예제와 함께 WHERE절 사용
-SELECT
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE
-	FROM TBL_MENU
-    WHERE MENU_PRICE >= 10000 AND
-		  MENU_PRICE <= 25000
 ORDER BY MENU_PRICE;
 
+/* 테이블 별칭 */
+-- 테이블 별칭은 AS를 써도 되고 생략도 가능하다.
 SELECT
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE
-	FROM TBL_MENU
-    WHERE MENU_PRICR BETWEEN 10000 AND 25000
-    ORDER BY MENU_PRICE;
+       A.CATEGORY_CODE,
+       A.MENU_NAME
+   FROM TBL_MENU A
+   ORDER BY A.CATEGORY_CODE,
+            A.MENU_NAME;
+            
+/* INNER JOIN */
+-- 두 테이블의 교집합을 반환하는 SQL JOIN
+-- INNER JOIN에서 INNER 키워드는 생략이 가능하다.
+SELECT
+       A.MENU_NAME,
+       B.CATEGORY_NAME
+  FROM TBL_MENU A
+  INNER JOIN TBL_CATEGORY B ON A.CATEGORY_CODE = B.CATEGORY_CODE;
+  
+/* USING */
+SELECT
+       A.MENU_NAME,
+       B.CATEGORY_NAME
+  FROM TBL_MENU A
+  INNER JOIN TBL_CATEGORY B USING (CATEGORY_CODE);
+  
+/* LEFT JOIN */
+SELECT
+       A.CATEGORY_NAME,
+       B.MENU_NAME
+  FROM TBL_CATEGORY A
+  LEFT JOIN TBL_MENU B ON A.CATEGORY_CODE = B.CATEGORY_CODE;  -- 왼쪽을 기준으로 교집합하는
+  
+  /* RIGHT JOIN */
+  SELECT
+         A.MENU_NAME,
+         B.CATEGORY_NAME
+  FROM TBL_MENU A
+  RIGHT JOIN TBL_CATEGORY B ON A.CATEGORY_CODE = B.CATEGORY_CODE;
+  
+  /* CROSS JOIN */
+  -- 두 테이블의 모든 가능한 조합을 반환
+  SELECT
+         A.MENU_NAME,
+         B.CATEGORY_NAME
+    FROM TBL_MENU A
+  CROSS JOIN TBL_CATEGORY B;
+  
+  /* SELF JOIN */
+  -- 같은 테이블 내에서 행과 행 사이의 관계를 찾기위해 사용되는 SQL JOIN
+  -- 카테고리별 대분류 확인을 위한 SELF JOIN 조회
+  SELECT
+        A.CATEGORY_NAME,
+        B.CATEGORY_NAME
+  FROM tbl_category A
+  JOIN tbl_category B ON A.ref_category_code = B.category_code
+  where A.ref_category_code IS NOT NULL;
+  
+  /* JOIN 알고리즘*/
+  /* NESTED LOOP JOIN */
+  -- 두 개 이상의 테이블에서 하나의 집합을 기준으로 순차적으로 상대방 ROW를 결합하여 조합하는 방식
+  -- 중첩 반복문처럼 첫 번째 테이블의 ROW와 관련되 두 번째 테이블에 대한 ROW를 검색하고
+  -- 이후 첫 번째 테이블의 다음 ROW에 대해 두 번째 테이블에 대한 것을 검색하며 이후 이와 같은 방식으로 반복한다.
+  
+  SELECT
+         A.MENU_NAME,
+         B.CATEGORY_NAME
+    FROM TBL_MENU A
+    JOIN tbl_category B on A.CATEGORY_CODE = B.CATEGORY_CODE;
     
--- 부정 표현
-SELECT
-       MENU_NAME,
-       MENU_PRICE,
-       CATEGORY_CODE
-	FROM TBL_MENU
-    WHERE MENU_PRICR NOT BETWEEN 10000 AND 25000
-    ORDER BY MENU_PRICE;
-    
--- 5) LIKE 연산자 예제와 함께 WHERE절 사용
-SELECT
-       MENU_NAME,
-       MENU_PRICE
-  FROM TBL_MENU
-   WHERE MENU_NAME LIKE '%마늘%'
-   ORDER BY MENU_NAME;
-   
-   -- 메뉴 코드, 메뉴 이름, 메뉴 가격, 카테고리 코드, 판매상태,
-   -- 조건 : 메뉴 가격이 5000초과이면서 카테고리코드가 10번이면서 메뉴 이름이 갈치가 포함되 쿼리문을 조회하세요.
-   
-   SELECT
-		MENU_CODE,
-        MENU_NAME,
-        MENU_PRICE,
-        CATEGORY_CODE,
-        ORDERABLE_STATUS
-   FROM TBL_MENU
-  WHERE MENU_PRICE > 5000 AND
-              CATEGORY_CODE = 10 AND
-              MENU_NAME LIKE '%갈치%'
-              
-	-- 부정표현
+    /* HASH JOIN */
+    -- HASH JOIN은 등가조인('=' 연산자를 사용하는 조인)에만 사용할 수 있고 비등가 조인에는 사용할 수 없다.
     SELECT
-           MENU_NAME,
-           MENU_PRICE
-	  FROM TBL_MENU
-      WHERE MENU_NAME NOT LIKE '%마늘%'
-      ORDER BY MENU_NAME;
-      
--- 6) IN 연산자 예제와 함께 WHERE절 사용
-SELECT
-       MENU_NAME,
-       CATEGORY_CODE
-  FROM TBL_MENU
- WHERE CATEGORY_CODE = 4 OR
-	   CATEGORY_CODE = 5 OR
-       CATEGORY_CODE = 6
-ORDER BY CATEGORY_CODE;
-
-SELECT
-       MENU_NAME,
-       CATEGORY_CODE
-  FROM TBL_MENU
- WHERE CATEGORY_CODE IN (4, 5, 6)
- ORDER BY CATEGORY_CODE;
- 
- -- 부정 표현
- SELECT
-       MENU_NAME,
-       CATEGORY_CODE
-  FROM TBL_MENU
- WHERE CATEGORY_CODE NOT IN (4, 5, 6)
- ORDER BY CATEGORY_CODE;
- 
- 
--- 7) IS NULL 연산자와 함께 WHERE절 사용
-SELECT
-       CATEGORY_CODE,
-       CATEGORY_NAME,
-       REF_CATEGORY_CODE
-FROM TBL_MENU
-WHERE REF_CATEGORY_CODE IS NULL;
-
--- 부정표현
-SELECT
-       CATEGORY_CODE,
-       CATEGORY_NAME,
-       REF_CATEGORY_CODE
-FROM TBL_MENU
-WHERE REF_CATEGORY_CODE IS NOT NULL;
+          A.MENU_NAME,
+          B.CATEGORY_name
+   FROM TBL_MENU A
+   JOIN tbl_category B ON A.CATEGORY_CODE = B.CATEGORY_CODE;
