@@ -29,7 +29,7 @@ SELECT
  WHERE CATEGORY_CODE = (SELECT
                                CATEGORY_CODE
 						  FROM TBL_MENU
-						 WHERE MENU_NAME = '민트미역국');
+						 WHERE MENU_NAME = '민트미역국'); -- 조건을 하나만 알고있을 때 두번 실행을 할 것을 한번으로 줄여준다.
                          
 -- 가장 많은 메뉴가 포함된 카테고리 조회
 -- 서브쿼리
